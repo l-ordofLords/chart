@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+</body>
+<script type="text/javascript">
+//请求
+
+
+
+
+
+
+
+
+//重绘的时候互不影响
+
+//1.先画出来
+let s = [{
+    name: "cpu",
+    value: 20
+}, {
+    name: "qq",
+    value: 20
+}, {
+    name: "a",
+    value: 20
+}, {
+    name: "c",
+    value: 20
+}, {
+    name: "b",
+    value: 20
+}];
+
+let m = [];
+for (let i = 0; i < 100; i++) {
+    let q = Math.floor(Math.random() * 20);
+    m.push(q);
+}
+
+let chart = new items(20, 20, 200, 200, s, m);
+chart.draw();
+
+
+function items(x, y, width, height, items, m) {
+    //x,y是画布即将放置的左上角或者是坐标
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+
+    let canvas = document.createElement("canvas");
+    canvas.id = "cvs";
+    canvas.width = this.width;
+    canvas.height = this.height;
+    let object = document.body.appendChild(canvas);
+    this.ctx = canvas.getContext("2d");
+
+
+
+    this.items = [];
+    for (let i = 0; i < items.length; i++) {
+        let f = items[i];
+        this.items.push(new item(f.name, f.value, 0.5 * this.width, 0.5 * height, 0.5 *(items.length - i) * this.width / items.length));
+    }
+
+    this.m = m;
+    this.l = 0;
+    //有数据来时调draw
+    this.draw = function() {
+
+
+
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        //先画外面的再画里面的
+
+        for (let i = 0; i < this.items.length; i++) {
+
+            let f = this.items[i];
+            if (!f.needUpdate) {
+                f.setData(this.m[this.l]);
+                this.l++;
+                if (this.l >= 100) {
+                    this.l = 0;
+                }
+
+            }
+
+
+
+
+
+
+            f.update();
+            this.ctx.beginPath();
+            this.ctx.moveTo(f.x, f.y);
+
+
+
+
+
+
+
+            this.ctx.fillStyle = f.color;
+
+            //this.ctx.arc(f.x, f.y, f.r, f.startAngle, f.length / 180 * Math.PI + this.startAngle * Math.PI);
+
+            this.ctx.arc(f.x, f.y, f.r, f.startAngle * Math.PI, (f.length / 180 + f.startAngle) * Math.PI);
+            this.ctx.closePath();
+
+
+            this.ctx.fill();
+            this.ctx.beginPath();
+            this.ctx.moveTo(f.x, f.y);
+
+
+            this.ctx.arc(f.x, f.y, 0.85 * f.r, 0, 2 * Math.PI);
+
+            this.ctx.closePath();
+            this.ctx.fillStyle = "white";
+            this.ctx.fill();
+
+
+
+        }
+
+
+        let ct = this;
+        requestAnimationFrame(ct.draw.bind(ct));
+
+    }
+
+
+}
+
+function item(name, max, x, y, r) {
+    this.name = name;
+    this.max = max;
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.color = "";
+    this.startAngle = -0.5;
+
+
+    this.t_length = 0;
+    this.length = 0;
+    this.needUpdate = false;
+
+    this.setData = function(t_num) {
+        this.t_length = Math.floor(t_num / this.max * 360);
+
+        this.needUpdate = true;
+    }
+
+    this.update = function() {
+        this.length += (this.t_length - this.length) * 0.03;
+
+        if (Math.abs(this.length - this.t_length) < 0.1) {
+            this.length = this.t_length;
+            this.needUpdate = false;
+        }
+        if (this.length/360<=0.5) {
+        	this.color = getColor([0,255,0],[255,255,0],this.length / 180);
+        }else{
+        	this.color = getColor([255,255,0],[255,0,0],this.length / 360-0.5);
+        }
+        
+
+    }
+    //0-1
+    function getColor([r,g,b],[r1,g1,b1],percent) {
+        return "rgb("+(r+(r1-r)*percent)+","+(g+(g1-g)*percent)+","+(b+(b1-b)*percent)+ ")";
+
+    }
+
+}
+</script>
+
+</html>
