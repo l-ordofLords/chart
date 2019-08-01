@@ -11,7 +11,7 @@
 <script type="text/javascript">
 //请求
 
-
+//离屏canvas，
 
 
 
@@ -38,17 +38,23 @@ let s = [{
     value: 20
 }];
 
-let m = [];
-for (let i = 0; i < 100; i++) {
-    let q = Math.floor(Math.random() * 20);
-    m.push(q);
-}
 
-let chart = new items(20, 20, 200, 200, s, m);
+function random() {
+    // body...
+    let m = [];
+    for (let i = 0; i < 100; i++) {
+        let q = Math.floor(Math.random() * 20);
+        m.push(q);
+    }
+    return m;
+}
+ 
+
+
+let chart = new items(20, 20, 200, 200, s);
 chart.draw();
 
-
-function items(x, y, width, height, items, m) {
+function items(x, y, width, height, items) {
     //x,y是画布即将放置的左上角或者是坐标
     this.x = x;
     this.y = y;
@@ -67,17 +73,19 @@ function items(x, y, width, height, items, m) {
     this.items = [];
     for (let i = 0; i < items.length; i++) {
         let f = items[i];
-        this.items.push(new item(f.name, f.value, 0.5 * this.width, 0.5 * height, 0.5 *(items.length - i) * this.width / items.length));
+        this.items.push(new item(f.name, f.value, 0.5 * this.width, 0.5 * height, 0.5 * (items.length - i) * this.width / items.length));
     }
+    this.m=random();
 
-    this.m = m;
+    
     this.l = 0;
     //有数据来时调draw
     this.draw = function() {
 
 
 
-        this.ctx.clearRect(0, 0, this.width, this.height);
+        //this.ctx.clearRect(0, 0, this.width, this.height);
+        canvas.width = canvas.width;
         //先画外面的再画里面的
 
         for (let i = 0; i < this.items.length; i++) {
@@ -87,6 +95,7 @@ function items(x, y, width, height, items, m) {
                 f.setData(this.m[this.l]);
                 this.l++;
                 if (this.l >= 100) {
+                	this.m=random();
                     this.l = 0;
                 }
 
@@ -160,23 +169,23 @@ function item(name, max, x, y, r) {
     }
 
     this.update = function() {
-        this.length += (this.t_length - this.length) * 0.03;
+        this.length += (this.t_length - this.length) * 0.1;
 
         if (Math.abs(this.length - this.t_length) < 0.1) {
             this.length = this.t_length;
             this.needUpdate = false;
         }
-        if (this.length/360<=0.5) {
-        	this.color = getColor([0,255,0],[255,255,0],this.length / 180);
-        }else{
-        	this.color = getColor([255,255,0],[255,0,0],this.length / 360-0.5);
+        if (this.length / 360 <= 0.5) {
+            this.color = getColor([0, 255, 0], [255, 255, 0], this.length / 180);
+        } else {
+            this.color = getColor([255, 255, 0], [255, 0, 0], this.length / 360 - 0.5);
         }
-        
+
 
     }
     //0-1
-    function getColor([r,g,b],[r1,g1,b1],percent) {
-        return "rgb("+(r+(r1-r)*percent)+","+(g+(g1-g)*percent)+","+(b+(b1-b)*percent)+ ")";
+    function getColor([r, g, b], [r1, g1, b1], percent) {
+        return "rgb(" + (r + (r1 - r) * percent) + "," + (g + (g1 - g) * percent) + "," + (b + (b1 - b) * percent) + ")";
 
     }
 
