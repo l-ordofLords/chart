@@ -2,12 +2,13 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no"  charset="UTF-8"/>
+    
     <title>Title</title>
 </head>
 
 <body>
-	<input id="pp">
+    <input id="pp">
 </body>
 <script type="text/javascript">
 //做一个带点击事件，能拖拽的东西
@@ -17,10 +18,13 @@
 		console.log(e)
 })
 chart.cursor="pointer"*/
-/*document.getElementById("a").addEventListener("mousedown",function(e){
-console.log(e)
+ChartRing(0,0);
+document.getElementById("canvas").addEventListener("mouseenter",function(e){
+     
+     ChartRing(e.clientX,e.clientY);
+
 })
-document.getElementById("a").style.cursor="pointer"*/
+//document.getElementById("a").style.cursor="pointer"
 //整一个全屏的透明canvas，组件的canvas就是组件自己的大小，图表的变化信息，都在图表自己的组件上呈现，然后要呈现临时的动态效果，不是一直在屏幕上呈现的效果，或者组件绘制在透明的那一层上
 //有一个数据结构去数据，这个数据结构所有组件通用，当点击事件触发时，多个组件之间可以做出响应
 
@@ -41,47 +45,58 @@ document.getElementById("a").style.cursor="pointer"*/
 }*/
 
 
-function ChartRing() {
+function ChartRing(x,y) {
     //1.要创建一个恰好包裹自身的canvas,带组件的（背景颜色，大小，位置）等参数，可以随意调节
-    let canvas = document.createElement("canvas");
+    let canvas;
+    if (document.getElementById("canvas")== null) {
+        canvas = document.createElement("canvas");
+        canvas.id = "canvas";
+        document.body.appendChild(canvas);
+    }else{
+    	canvas=document.getElementById("canvas");
+        console.log(canvas);
+    }
+
     //显示用的
     /*创建并新增节点
     1、document.creatElement("标签名"):创建节点。需要配合setAttribute设置各种新的属性；
 
     2、父节点.appendChild(新节点)：末尾追加方式插入节点
     3、父节点.insertBefore(新节点，目标节点)：在目标节点前插入新节点。*/
-    document.body.appendChild(canvas);
+    
     //现在对canvas的属性做一系列设置，除了宽高之外重要的是对canvis的位置进行设置
     //canvas.width;canvas.height;
     //当前宽高
 
-    let percent =0.99;
+    let percent = 0;
 
-    let left= window.innerWidth*percent-0.5*canvas.width;
-    let top= window.innerHeight*percent-0.5*canvas.height;
+    let left = window.screen.availWidth * percent - 0.5 * canvas.width;
+    let top =  window.screen.availHeight * percent - 0.5 * canvas.height;
 
-    if (left<0||top<0) {
-    	left=0;
-    	top=0;
-    }else if (left+canvas.width> window.innerWidth||top+canvas.height> window.innerHeight) {
-    	left=window.innerWidth-canvas.width;
-    	top=window.innerHeight-canvas.height;
+    if (left < 0 || top < 0) {
+        left = 0;
+        top = 0;
+    } else if (left + canvas.width > window.screen.availWidth || top + canvas.height > window.screen.availHeight) {
+        left = window.screen.availWidth - canvas.width;
+        top =  window.screen.availHeight - canvas.height;
     }
-    
-    canvas.style="position:absolute;left:"+left+"px;top:"+top+"px;";
+    left=x;top=y;
+    canvas.style = "position:absolute;left:" + left + "px;top:" + top + "px;";
 
     let ctx = canvas.getContext("2d");
-    
+
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
-    
+
 
 
 
 
 
 }
-document.getElementById("pp").addEventListener("onporpertychange",function(e){
-　　　　console.log("inputting!!");
+document.getElementById("pp").addEventListener("change", () => {
+    ChartRing(document.getElementById("pp").value);
+
+
 })
 </script>
 
